@@ -29,10 +29,15 @@ import {
   Twitter,
   Linkedin,
   Github,
-  Youtube
+  Youtube,
+  Newspaper,
+  Briefcase,
+  ShoppingBag,
+  Store
 } from 'lucide-react';
 import { geminiService } from './services/geminiService';
 import { useTranslation } from './hooks/useTranslation';
+import { EcosystemApp } from './components/EcosystemApp';
 
 const NavItem = ({ href, children, onClick }: { href: string; children: React.ReactNode; onClick?: () => void }) => (
   <a 
@@ -105,6 +110,7 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showAIDetail, setShowAIDetail] = useState(false);
+  const [showEcosystemApp, setShowEcosystemApp] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai', text: string }[]>([
     { role: 'ai', text: t.chat.welcome }
@@ -131,12 +137,12 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (showAIDetail) {
+    if (showAIDetail || showEcosystemApp) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-  }, [showAIDetail]);
+  }, [showAIDetail, showEcosystemApp]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -155,7 +161,7 @@ export default function App() {
             </div>
             <div className="hidden sm:block">
               <div className="font-bold text-lg tracking-tight leading-none">{t.footer.brand}</div>
-              <div className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] uppercase">Global Launch</div>
+              <div className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] uppercase">{t.common.globalLaunch}</div>
             </div>
           </div>
 
@@ -164,6 +170,12 @@ export default function App() {
               <NavItem href="#regions">{t.nav.regions}</NavItem>
               <NavItem href="#ai-tech">{t.nav.tech}</NavItem>
               <NavItem href="#ai">{t.nav.ai}</NavItem>
+              <button 
+                onClick={() => setShowEcosystemApp(true)}
+                className="text-sm font-bold text-cyan-400 hover:text-white transition-colors uppercase tracking-widest flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" /> {t.ecosystem.cta.launch}
+              </button>
               <NavItem href="#mexico">{t.nav.mexico}</NavItem>
               <div className="flex items-center gap-4">
                 <button className="px-6 py-2.5 bg-white text-black text-sm font-bold rounded-full hover:bg-cyan-400 transition-colors">
@@ -198,6 +210,12 @@ export default function App() {
               <NavItem href="#regions" onClick={() => setIsMenuOpen(false)}>{t.nav.regions}</NavItem>
               <NavItem href="#ai-tech" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</NavItem>
               <NavItem href="#ai" onClick={() => setIsMenuOpen(false)}>{t.nav.ai}</NavItem>
+              <button 
+                onClick={() => { setShowEcosystemApp(true); setIsMenuOpen(false); }}
+                className="text-left text-sm font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" /> {t.ecosystem.cta.launch}
+              </button>
               <NavItem href="#mexico" onClick={() => setIsMenuOpen(false)}>{t.nav.mexico}</NavItem>
               <button className="w-full py-4 bg-cyan-500 text-black font-bold rounded-2xl">
                 {t.nav.consult}
@@ -257,10 +275,11 @@ export default function App() {
                 {t.hero.cta.explore} <ArrowRight className="w-5 h-5" />
               </button>
               <button 
-                onClick={() => setShowAIDetail(true)}
+                onClick={() => setShowEcosystemApp(true)}
                 className="px-10 py-5 glass font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-colors"
               >
-                {t.hero.cta.experience}
+                <Sparkles className="w-5 h-5 text-cyan-400" />
+                {t.ecosystem.cta.launch}
               </button>
             </div>
           </motion.div>
@@ -371,58 +390,114 @@ export default function App() {
       </section>
 
       {/* AI Assistant Section */}
-      <section id="ai" className="py-32">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-6xl font-black mb-6">{t.ai.title}</h2>
-            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
+      <section id="ai" className="py-32 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.05),transparent_70%)] pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-6 relative">
+          <div className="text-center mb-24">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              className="inline-block px-4 py-1 rounded-full glass border-cyan-500/30 text-cyan-400 text-xs font-bold mb-6 uppercase tracking-widest"
+            >
+              Google Studio Powered
+            </motion.div>
+            <h2 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter">
+              {t.ai.title}
+            </h2>
+            <p className="text-xl text-zinc-400 max-w-3xl mx-auto leading-relaxed">
               {t.ai.desc}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <FeatureCard 
-              icon={Database}
-              title={t.ai.features[0].title}
-              description={t.ai.features[0].desc}
-              features={t.ai.features[0].items}
-              colorClass="cyan-400"
-            />
-            <FeatureCard 
-              icon={BrainCircuit}
-              title={t.ai.features[1].title}
-              description={t.ai.features[1].desc}
-              features={t.ai.features[1].items}
-              colorClass="blue-400"
-            />
-            <FeatureCard 
-              icon={Sparkles}
-              title={t.ai.features[2].title}
-              description={t.ai.features[2].desc}
-              features={t.ai.features[2].items}
-              colorClass="purple-400"
-            />
-            <FeatureCard 
-              icon={Search}
-              title={t.ai.features[3].title}
-              description={t.ai.features[3].desc}
-              features={t.ai.features[3].items}
-              colorClass="emerald-400"
-            />
-            <FeatureCard 
-              icon={Languages}
-              title={t.ai.features[4].title}
-              description={t.ai.features[4].desc}
-              features={t.ai.features[4].items}
-              colorClass="orange-400"
-            />
-            <FeatureCard 
-              icon={Zap}
-              title={t.ai.features[5].title}
-              description={t.ai.features[5].desc}
-              features={t.ai.features[5].items}
-              colorClass="rose-400"
-            />
+            {t.ai.cards.map((card: any, i: number) => {
+              const icons = [Database, BrainCircuit, Sparkles, Search, Languages, Zap];
+              const colors = ["cyan-400", "blue-400", "purple-400", "emerald-400", "orange-400", "rose-400"];
+              return (
+                <FeatureCard 
+                  key={i}
+                  icon={icons[i]}
+                  title={card.title}
+                  description={card.desc}
+                  features={card.features}
+                  colorClass={colors[i]}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Huashang Intelligent Local Ecosystem Section */}
+      <section id="ecosystem" className="py-32 bg-zinc-950/30">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+            <div className="max-w-2xl">
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                className="text-cyan-400 font-bold text-sm uppercase tracking-[0.3em] mb-4 flex items-center gap-3"
+              >
+                {t.ecosystem.subtitle}
+                <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] text-zinc-400 border border-white/10">{t.common.nextGen}</span>
+              </motion.div>
+              <h2 className="text-4xl md:text-6xl font-black mb-6">{t.ecosystem.title}</h2>
+              <p className="text-xl text-zinc-400 leading-relaxed">
+                {t.ecosystem.desc}
+              </p>
+            </div>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              onClick={() => setShowEcosystemApp(true)}
+              className="glass px-8 py-4 rounded-2xl border-cyan-500/20 flex items-center gap-4 cursor-pointer group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                <Smartphone className="w-6 h-6 text-cyan-400" />
+              </div>
+              <div>
+                <div className="text-xs text-zinc-500 font-bold uppercase tracking-widest">{t.common.downloadApp}</div>
+                <div className="font-bold group-hover:text-cyan-400 transition-colors">{t.common.mobileApp}</div>
+              </div>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {t.ecosystem.apps.map((app: any, i: number) => {
+              const icons: any = {
+                news: Newspaper,
+                jobs: Briefcase,
+                market: ShoppingBag,
+                shop: Store
+              };
+              const Icon = icons[app.id];
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -10 }}
+                  className="glass p-8 rounded-[2rem] border-white/5 hover:border-cyan-500/30 transition-all group"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 group-hover:bg-cyan-500/10 transition-colors">
+                    <Icon className="w-7 h-7 text-zinc-400 group-hover:text-cyan-400 transition-colors" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4 group-hover:text-cyan-400 transition-colors">{app.title}</h3>
+                  <p className="text-zinc-500 text-sm leading-relaxed mb-8">
+                    {app.desc}
+                  </p>
+                  <ul className="space-y-3">
+                    {app.features.map((f: string, j: number) => (
+                      <li key={j} className="flex items-center gap-2 text-xs text-zinc-400">
+                        <div className="w-1 h-1 rounded-full bg-cyan-500" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -545,6 +620,21 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Ecosystem App Overlay */}
+      <AnimatePresence>
+        {showEcosystemApp && (
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[200]"
+          >
+            <EcosystemApp onBack={() => setShowEcosystemApp(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* AI Command Center Detail View */}
       <AnimatePresence>
